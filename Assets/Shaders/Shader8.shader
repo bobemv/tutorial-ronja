@@ -1,15 +1,16 @@
-﻿Shader "RonjaTutorial/06_Transparency"{
+﻿Shader "RonjaTutorial/08_Planar_Mapping"{
     Properties{
         _Color("Color", Color) = (0, 0, 0, 1)
         _MainTex ("Texture", 2D) = "white" {}
 
     }
     Subshader{
-        Tags{ "RenderType"="Transparent" "Queue"="Transparent"}
+        Tags{
+            "RenderType"="Opaque"
+            "Queue"="Geometry"
+        }
         Pass{
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
-            
+
             CGPROGRAM
             #include "unityCG.cginc"
 
@@ -22,7 +23,6 @@
 
             struct appdata{
                 float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
             };
 
             struct v2f{
@@ -33,7 +33,8 @@
             v2f vert(appdata v){
                 v2f o;
                 o.position = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.uv = TRANSFORM_TEX(worldPos.xz, _MainTex);
                 return o;
             }
 
